@@ -2,12 +2,20 @@
 {-# LANGUAGE MagicHash #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE CPP #-}
-module GHC.Word.Compat (Word8, pattern GHC.Word.Compat.W8#,
-    Word16, pattern GHC.Word.Compat.W16#,
-    Word32, pattern GHC.Word.Compat.W32#,
+module GHC.Word.Compat (Word8,
+    Word16,
+    Word32,
     Word64(..),
     Word(..),
-    
+#if MIN_VERSION_ghc_prim(0,8,0)
+    pattern GHC.Word.Compat.W8#,
+    pattern GHC.Word.Compat.W16#,
+    pattern GHC.Word.Compat.W32#,
+#else
+    pattern W.W8#,
+    pattern W.W16#,
+    pattern W.W32#,
+#endif
         -- * Shifts
     uncheckedShiftL64#,
     uncheckedShiftRL64#,
@@ -33,29 +41,22 @@ module GHC.Word.Compat (Word8, pattern GHC.Word.Compat.W8#,
     eqWord32, neWord32, gtWord32, geWord32, ltWord32, leWord32,
     eqWord64, neWord64, gtWord64, geWord64, ltWord64, leWord64) where
 
-import GHC.Prim
 import GHC.Word as W
 
-pattern W8# :: Word# -> Word8
 #if MIN_VERSION_ghc_prim(0,8,0)
+
+import GHC.Prim
+
+pattern W8# :: Word# -> Word8
 pattern W8# x <- (W.W8# (word8ToWord# -> x)) where
   W8# x = W.W8# (wordToWord8# x)
-#else
-pattern W8# x = W.W8# x
-#endif
 
 pattern W16# :: Word# -> Word16
-#if MIN_VERSION_ghc_prim(0,8,0)
 pattern W16# x <- (W.W16# (word16ToWord# -> x)) where
   W16# x = W.W16# (wordToWord16# x)
-#else
-pattern W16# x = W.W16# x
-#endif
 
 pattern W32# :: Word# -> Word32
-#if MIN_VERSION_ghc_prim(0,8,0)
 pattern W32# x <- (W.W32# (word32ToWord# -> x)) where
   W32# x = W.W32# (wordToWord32# x)
-#else
-pattern W32# x = W.W32# x
+
 #endif
