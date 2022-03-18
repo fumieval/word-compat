@@ -25,7 +25,7 @@ pattern I8# :: Int# -> Int8
 pattern I8# x <- (W.I8# (int8ToInt# -> x)) where
   I8# x = W.I8# (intToInt8# x)
 #else
-pattern I8# = I8#
+pattern I8# x = W.I8# x
 #endif
 
 pattern I16# :: Int# -> Int16
@@ -33,7 +33,7 @@ pattern I16# :: Int# -> Int16
 pattern I16# x <- (W.I16# (int16ToInt# -> x)) where
   I16# x = W.I16# (intToInt16# x)
 #else
-pattern I16# = I16#
+pattern I16# x = W.I16# x
 #endif
 
 pattern I32# :: Int# -> Int32
@@ -41,5 +41,5 @@ pattern I32# :: Int# -> Int32
 pattern I32# x <- (W.I32# (int32ToInt# -> x)) where
   I32# x = W.I32# (intToInt32# x)
 #else
-pattern I32# = I32#
+pattern I32# x = W.I32# x
 #endif

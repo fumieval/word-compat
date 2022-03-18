@@ -39,7 +39,7 @@ pattern W8# :: Word# -> Word8
 pattern W8# x <- (W.W8# (word8ToWord# -> x)) where
   W8# x = W.W8# (wordToWord8# x)
 #else
-pattern W8# = W8#
+pattern W8# x = W.W8# x
 #endif
 
 pattern W16# :: Word# -> Word16
@@ -47,7 +47,7 @@ pattern W16# :: Word# -> Word16
 pattern W16# x <- (W.W16# (word16ToWord# -> x)) where
   W16# x = W.W16# (wordToWord16# x)
 #else
-pattern W16# = W16#
+pattern W16# x = W.W16# x
 #endif
 
 pattern W32# :: Word# -> Word32
@@ -55,5 +55,5 @@ pattern W32# :: Word# -> Word32
 pattern W32# x <- (W.W32# (word32ToWord# -> x)) where
   W32# x = W.W32# (wordToWord32# x)
 #else
-pattern W32# = W32#
+pattern W32# x = W.W32# x
 #endif
