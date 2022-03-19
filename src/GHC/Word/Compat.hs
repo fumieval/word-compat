@@ -18,7 +18,7 @@ module GHC.Word.Compat (Word8, pattern GHC.Word.Compat.W8#,
     byteSwap64,
 
     -- * Bit reversal
-#if MIN_VERSION_base(4,12,0)
+#if MIN_VERSION_base(4,14,0)
     bitReverse8,
     bitReverse16,
     bitReverse32,
