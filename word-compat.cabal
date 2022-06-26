@@ -1,6 +1,6 @@
 cabal-version:      2.4
 name:               word-compat
-version:            0.0.2
+version:            0.0.3
 
 -- A short (one-line) description of the package.
 synopsis: Compatibility shim for the Int/Word internal change in GHC 9.2
@@ -39,3 +39,11 @@ library
     hs-source-dirs:   src
     ghc-options: -Wall -Wcompat
     default-language: Haskell2010
+
+test-suite test
+    main-is: test.hs
+    hs-source-dirs: tests
+    type: exitcode-stdio-1.0
+    ghc-options: -Wall -Wcompat
+    build-depends:
+      base, word-compat
