@@ -1,5 +1,9 @@
 # Revision history for word-compat
 
+## 0.0.3
+
+* Added `COMPLETE` pragmas to pattern synonyms
+
 ## 0.0.2
 
 * Fixed a bug where bitReverse* were incorrectly exported on base >= 4.12
