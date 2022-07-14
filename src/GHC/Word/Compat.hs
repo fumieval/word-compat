@@ -39,14 +39,27 @@ module GHC.Word.Compat (W.Word8,
     eqWord8, neWord8, gtWord8, geWord8, ltWord8, leWord8,
     eqWord16, neWord16, gtWord16, geWord16, ltWord16, leWord16,
     eqWord32, neWord32, gtWord32, geWord32, ltWord32, leWord32,
-    eqWord64, neWord64, gtWord64, geWord64, ltWord64, leWord64) where
+    eqWord64, neWord64, gtWord64, geWord64, ltWord64, leWord64,
+
+    -- * Indexing Functions
+    writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#) where
 
 import GHC.Word hiding (Word8(..), Word16(..), Word32(..))
 import qualified GHC.Word as W
 
 #if MIN_VERSION_ghc_prim(0,8,0)
+import GHC.Prim (
+    Addr#,Int#,State#,Word#,
+    wordToWord8#,wordToWord16#,wordToWord32#,
+    word8ToWord#,word16ToWord#,word32ToWord#)
+import qualified GHC.Prim as Prim
+#else
+import GHC.Prim (
+    writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#)
+#endif
 
-import GHC.Prim
+
+#if MIN_VERSION_ghc_prim(0,8,0)
 
 pattern W8# :: Word# -> W.Word8
 pattern W8# x <- (W.W8# (word8ToWord# -> x)) where
@@ -62,5 +75,26 @@ pattern W32# :: Word# -> W.Word32
 pattern W32# x <- (W.W32# (word32ToWord# -> x)) where
   W32# x = W.W32# (wordToWord32# x)
 {-# COMPLETE W32# #-}
+
+
+writeWord8OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
+writeWord8OffAddr# addr off v st =
+  Prim.writeWord8OffAddr# addr off (wordToWord8# v) st
+{-# INLINE writeWord8OffAddr# #-}
+
+writeWord16OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
+writeWord16OffAddr# addr off v st =
+  Prim.writeWord16OffAddr# addr off (wordToWord16# v) st
+{-# INLINE writeWord16OffAddr# #-}
+
+writeWord32OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
+writeWord32OffAddr# addr off v st =
+  Prim.writeWord32OffAddr# addr off (wordToWord32# v) st
+{-# INLINE writeWord32OffAddr# #-}
+
+writeWord64OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
+writeWord64OffAddr# addr off v st =
+  Prim.writeWord64OffAddr# addr off v st
+{-# INLINE writeWord64OffAddr# #-}
 
 #endif
