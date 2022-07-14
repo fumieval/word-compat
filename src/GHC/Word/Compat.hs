@@ -45,6 +45,7 @@ module GHC.Word.Compat (W.Word8,
     eqWord64, neWord64, gtWord64, geWord64, ltWord64, leWord64,
 
     -- * Indexing Functions
+    indexWord8OffAddr#,indexWord16OffAddr#,indexWord32OffAddr#,indexWord64OffAddr#,
     readWord8OffAddr#,readWord16OffAddr#,readWord32OffAddr#,readWord64OffAddr#,
     writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#) where
 
@@ -59,6 +60,7 @@ import GHC.Prim (
 import qualified GHC.Prim as Prim
 #else
 import GHC.Prim (
+    indexWord8OffAddr#,indexWord16OffAddr#,indexWord32OffAddr#,indexWord64OffAddr#,
     readWord8OffAddr#,readWord16OffAddr#,readWord32OffAddr#,readWord64OffAddr#,
     writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#)
 #endif
@@ -81,6 +83,22 @@ pattern W32# x <- (W.W32# (word32ToWord# -> x)) where
   W32# x = W.W32# (wordToWord32# x)
 {-# COMPLETE W32# #-}
 
+
+indexWord8OffAddr# :: Addr# -> Int# -> Word#
+indexWord8OffAddr# addr off = word8ToWord# (Prim.indexWord8OffAddr# addr off)
+{-# INLINE indexWord8OffAddr# #-}
+
+indexWord16OffAddr# :: Addr# -> Int# -> Word#
+indexWord16OffAddr# addr off = word16ToWord# (Prim.indexWord16OffAddr# addr off)
+{-# INLINE indexWord16OffAddr# #-}
+
+indexWord32OffAddr# :: Addr# -> Int# -> Word#
+indexWord32OffAddr# addr off = word32ToWord# (Prim.indexWord32OffAddr# addr off)
+{-# INLINE indexWord32OffAddr# #-}
+
+indexWord64OffAddr# :: Addr# -> Int# -> Word#
+indexWord64OffAddr# addr off = Prim.indexWord64OffAddr# addr off
+{-# INLINE indexWord64OffAddr# #-}
 
 readWord8OffAddr# :: Addr# -> Int# -> State# d -> (# State# d, Word# #)
 readWord8OffAddr# addr off st =
