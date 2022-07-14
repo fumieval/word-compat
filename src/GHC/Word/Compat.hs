@@ -45,6 +45,9 @@ module GHC.Word.Compat (W.Word8,
     eqWord64, neWord64, gtWord64, geWord64, ltWord64, leWord64,
 
     -- * Indexing Functions
+    indexWord8Array#,indexWord16Array#,indexWord32Array#,indexWord64Array#,
+    readWord8Array#,readWord16Array#,readWord32Array#,readWord64Array#,
+    writeWord8Array#,writeWord16Array#,writeWord32Array#,writeWord64Array#,
     indexWord8OffAddr#,indexWord16OffAddr#,indexWord32OffAddr#,indexWord64OffAddr#,
     readWord8OffAddr#,readWord16OffAddr#,readWord32OffAddr#,readWord64OffAddr#,
     writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#) where
@@ -54,12 +57,15 @@ import qualified GHC.Word as W
 
 #if MIN_VERSION_ghc_prim(0,8,0)
 import GHC.Prim (
-    Addr#,Int#,State#,Word#,
+    Addr#,ByteArray#,Int#,MutableByteArray#,State#,Word#,
     wordToWord8#,wordToWord16#,wordToWord32#,
     word8ToWord#,word16ToWord#,word32ToWord#)
 import qualified GHC.Prim as Prim
 #else
 import GHC.Prim (
+    indexWord8Array#,indexWord16Array#,indexWord32Array#,indexWord64Array#,
+    readWord8Array#,readWord16Array#,readWord32Array#,readWord64Array#,
+    writeWord8Array#,writeWord16Array#,writeWord32Array#,writeWord64Array#,
     indexWord8OffAddr#,indexWord16OffAddr#,indexWord32OffAddr#,indexWord64OffAddr#,
     readWord8OffAddr#,readWord16OffAddr#,readWord32OffAddr#,readWord64OffAddr#,
     writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#)
@@ -83,6 +89,59 @@ pattern W32# x <- (W.W32# (word32ToWord# -> x)) where
   W32# x = W.W32# (wordToWord32# x)
 {-# COMPLETE W32# #-}
 
+indexWord8Array# :: ByteArray# -> Int# -> Word#
+indexWord8Array# arr i = word8ToWord# (Prim.indexWord8Array# arr i)
+{-# INLINE indexWord8Array# #-}
+
+indexWord16Array# :: ByteArray# -> Int# -> Word#
+indexWord16Array# arr i = word16ToWord# (Prim.indexWord16Array# arr i)
+{-# INLINE indexWord16Array# #-}
+
+indexWord32Array# :: ByteArray# -> Int# -> Word#
+indexWord32Array# arr i = word32ToWord# (Prim.indexWord32Array# arr i)
+{-# INLINE indexWord32Array# #-}
+
+indexWord64Array# :: ByteArray# -> Int# -> Word#
+indexWord64Array# = Prim.indexWord64Array#
+{-# INLINE indexWord64Array# #-}
+
+readWord8Array# :: MutableByteArray# d -> Int# -> State# d -> (# State# d, Word# #)
+readWord8Array# arr ix st =
+  let !(# st', v #) = Prim.readWord8Array# arr ix st
+   in (# st', word8ToWord# v #)
+{-# INLINE readWord8Array# #-}
+
+readWord16Array# :: MutableByteArray# d -> Int# -> State# d -> (# State# d, Word# #)
+readWord16Array# arr ix st =
+  let !(# st', v #) = Prim.readWord16Array# arr ix st
+   in (# st', word16ToWord# v #)
+{-# INLINE readWord16Array# #-}
+
+readWord32Array# :: MutableByteArray# d -> Int# -> State# d -> (# State# d, Word# #)
+readWord32Array# arr ix st =
+  let !(# st', v #) = Prim.readWord32Array# arr ix st
+   in (# st', word32ToWord# v #)
+{-# INLINE readWord32Array# #-}
+
+readWord64Array# :: MutableByteArray# d -> Int# -> State# d -> (# State# d, Word# #)
+readWord64Array# = Prim.readWord64Array#
+{-# INLINE readWord64Array# #-}
+
+writeWord8Array# :: MutableByteArray# d -> Int# -> Word# -> State# d -> State# d
+writeWord8Array# arr ix v st = Prim.writeWord8Array# arr ix (wordToWord8# v) st
+{-# INLINE writeWord8Array# #-}
+
+writeWord16Array# :: MutableByteArray# d -> Int# -> Word# -> State# d -> State# d
+writeWord16Array# arr ix v st = Prim.writeWord16Array# arr ix (wordToWord16# v) st
+{-# INLINE writeWord16Array# #-}
+
+writeWord32Array# :: MutableByteArray# d -> Int# -> Word# -> State# d -> State# d
+writeWord32Array# arr ix v st = Prim.writeWord32Array# arr ix (wordToWord32# v) st
+{-# INLINE writeWord32Array# #-}
+
+writeWord64Array# :: MutableByteArray# d -> Int# -> Word# -> State# d -> State# d
+writeWord64Array# = Prim.writeWord64Array#
+{-# INLINE writeWord64Array# #-}
 
 indexWord8OffAddr# :: Addr# -> Int# -> Word#
 indexWord8OffAddr# addr off = word8ToWord# (Prim.indexWord8OffAddr# addr off)
