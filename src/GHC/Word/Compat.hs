@@ -2,6 +2,9 @@
 {-# LANGUAGE MagicHash #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE UnboxedTuples #-}
+
 module GHC.Word.Compat (W.Word8,
     W.Word16,
     W.Word32,
@@ -42,6 +45,7 @@ module GHC.Word.Compat (W.Word8,
     eqWord64, neWord64, gtWord64, geWord64, ltWord64, leWord64,
 
     -- * Indexing Functions
+    readWord8OffAddr#,readWord16OffAddr#,readWord32OffAddr#,readWord64OffAddr#,
     writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#) where
 
 import GHC.Word hiding (Word8(..), Word16(..), Word32(..))
@@ -55,6 +59,7 @@ import GHC.Prim (
 import qualified GHC.Prim as Prim
 #else
 import GHC.Prim (
+    readWord8OffAddr#,readWord16OffAddr#,readWord32OffAddr#,readWord64OffAddr#,
     writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#)
 #endif
 
@@ -77,6 +82,28 @@ pattern W32# x <- (W.W32# (word32ToWord# -> x)) where
 {-# COMPLETE W32# #-}
 
 
+readWord8OffAddr# :: Addr# -> Int# -> State# d -> (# State# d, Word# #)
+readWord8OffAddr# addr off st =
+  let !(# st', v #) = Prim.readWord8OffAddr# addr off st
+   in (# st', word8ToWord# v #)
+{-# INLINE readWord8OffAddr# #-}
+
+readWord16OffAddr# :: Addr# -> Int# -> State# d -> (# State# d, Word# #)
+readWord16OffAddr# addr off st =
+  let !(# st', v #) = Prim.readWord16OffAddr# addr off st
+   in (# st', word16ToWord# v #)
+{-# INLINE readWord16OffAddr# #-}
+
+readWord32OffAddr# :: Addr# -> Int# -> State# d -> (# State# d, Word# #)
+readWord32OffAddr# addr off st =
+  let !(# st', v #) = Prim.readWord32OffAddr# addr off st
+   in (# st', word32ToWord# v #)
+{-# INLINE readWord32OffAddr# #-}
+
+readWord64OffAddr# :: Addr# -> Int# -> State# d -> (# State# d, Word# #)
+readWord64OffAddr# = Prim.readWord64OffAddr#
+{-# INLINE readWord64OffAddr# #-}
+
 writeWord8OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
 writeWord8OffAddr# addr off v st =
   Prim.writeWord8OffAddr# addr off (wordToWord8# v) st
@@ -93,8 +120,7 @@ writeWord32OffAddr# addr off v st =
 {-# INLINE writeWord32OffAddr# #-}
 
 writeWord64OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
-writeWord64OffAddr# addr off v st =
-  Prim.writeWord64OffAddr# addr off v st
+writeWord64OffAddr# = Prim.writeWord64OffAddr#
 {-# INLINE writeWord64OffAddr# #-}
 
 #endif
