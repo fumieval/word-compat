@@ -2,9 +2,6 @@
 {-# LANGUAGE MagicHash #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE BangPatterns #-}
-{-# LANGUAGE UnboxedTuples #-}
-
 module GHC.Word.Compat (W.Word8,
     W.Word16,
     W.Word32,
@@ -42,37 +39,14 @@ module GHC.Word.Compat (W.Word8,
     eqWord8, neWord8, gtWord8, geWord8, ltWord8, leWord8,
     eqWord16, neWord16, gtWord16, geWord16, ltWord16, leWord16,
     eqWord32, neWord32, gtWord32, geWord32, ltWord32, leWord32,
-    eqWord64, neWord64, gtWord64, geWord64, ltWord64, leWord64,
-
-    -- * Indexing Functions
-    indexWord8Array#,indexWord16Array#,indexWord32Array#,indexWord64Array#,
-    readWord8Array#,readWord16Array#,readWord32Array#,readWord64Array#,
-    writeWord8Array#,writeWord16Array#,writeWord32Array#,writeWord64Array#,
-    indexWord8OffAddr#,indexWord16OffAddr#,indexWord32OffAddr#,indexWord64OffAddr#,
-    readWord8OffAddr#,readWord16OffAddr#,readWord32OffAddr#,readWord64OffAddr#,
-    writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#) where
+    eqWord64, neWord64, gtWord64, geWord64, ltWord64, leWord64) where
 
 import GHC.Word hiding (Word8(..), Word16(..), Word32(..))
 import qualified GHC.Word as W
 
 #if MIN_VERSION_ghc_prim(0,8,0)
-import GHC.Prim (
-    Addr#,ByteArray#,Int#,MutableByteArray#,State#,Word#,
-    wordToWord8#,wordToWord16#,wordToWord32#,
-    word8ToWord#,word16ToWord#,word32ToWord#)
-import qualified GHC.Prim as Prim
-#else
-import GHC.Prim (
-    indexWord8Array#,indexWord16Array#,indexWord32Array#,indexWord64Array#,
-    readWord8Array#,readWord16Array#,readWord32Array#,readWord64Array#,
-    writeWord8Array#,writeWord16Array#,writeWord32Array#,writeWord64Array#,
-    indexWord8OffAddr#,indexWord16OffAddr#,indexWord32OffAddr#,indexWord64OffAddr#,
-    readWord8OffAddr#,readWord16OffAddr#,readWord32OffAddr#,readWord64OffAddr#,
-    writeWord8OffAddr#,writeWord16OffAddr#,writeWord32OffAddr#,writeWord64OffAddr#)
-#endif
 
-
-#if MIN_VERSION_ghc_prim(0,8,0)
+import GHC.Prim
 
 pattern W8# :: Word# -> W.Word8
 pattern W8# x <- (W.W8# (word8ToWord# -> x)) where
@@ -88,116 +62,5 @@ pattern W32# :: Word# -> W.Word32
 pattern W32# x <- (W.W32# (word32ToWord# -> x)) where
   W32# x = W.W32# (wordToWord32# x)
 {-# COMPLETE W32# #-}
-
-indexWord8Array# :: ByteArray# -> Int# -> Word#
-indexWord8Array# arr i = word8ToWord# (Prim.indexWord8Array# arr i)
-{-# INLINE indexWord8Array# #-}
-
-indexWord16Array# :: ByteArray# -> Int# -> Word#
-indexWord16Array# arr i = word16ToWord# (Prim.indexWord16Array# arr i)
-{-# INLINE indexWord16Array# #-}
-
-indexWord32Array# :: ByteArray# -> Int# -> Word#
-indexWord32Array# arr i = word32ToWord# (Prim.indexWord32Array# arr i)
-{-# INLINE indexWord32Array# #-}
-
-indexWord64Array# :: ByteArray# -> Int# -> Word#
-indexWord64Array# = Prim.indexWord64Array#
-{-# INLINE indexWord64Array# #-}
-
-readWord8Array# :: MutableByteArray# d -> Int# -> State# d -> (# State# d, Word# #)
-readWord8Array# arr ix st =
-  let !(# st', v #) = Prim.readWord8Array# arr ix st
-   in (# st', word8ToWord# v #)
-{-# INLINE readWord8Array# #-}
-
-readWord16Array# :: MutableByteArray# d -> Int# -> State# d -> (# State# d, Word# #)
-readWord16Array# arr ix st =
-  let !(# st', v #) = Prim.readWord16Array# arr ix st
-   in (# st', word16ToWord# v #)
-{-# INLINE readWord16Array# #-}
-
-readWord32Array# :: MutableByteArray# d -> Int# -> State# d -> (# State# d, Word# #)
-readWord32Array# arr ix st =
-  let !(# st', v #) = Prim.readWord32Array# arr ix st
-   in (# st', word32ToWord# v #)
-{-# INLINE readWord32Array# #-}
-
-readWord64Array# :: MutableByteArray# d -> Int# -> State# d -> (# State# d, Word# #)
-readWord64Array# = Prim.readWord64Array#
-{-# INLINE readWord64Array# #-}
-
-writeWord8Array# :: MutableByteArray# d -> Int# -> Word# -> State# d -> State# d
-writeWord8Array# arr ix v st = Prim.writeWord8Array# arr ix (wordToWord8# v) st
-{-# INLINE writeWord8Array# #-}
-
-writeWord16Array# :: MutableByteArray# d -> Int# -> Word# -> State# d -> State# d
-writeWord16Array# arr ix v st = Prim.writeWord16Array# arr ix (wordToWord16# v) st
-{-# INLINE writeWord16Array# #-}
-
-writeWord32Array# :: MutableByteArray# d -> Int# -> Word# -> State# d -> State# d
-writeWord32Array# arr ix v st = Prim.writeWord32Array# arr ix (wordToWord32# v) st
-{-# INLINE writeWord32Array# #-}
-
-writeWord64Array# :: MutableByteArray# d -> Int# -> Word# -> State# d -> State# d
-writeWord64Array# = Prim.writeWord64Array#
-{-# INLINE writeWord64Array# #-}
-
-indexWord8OffAddr# :: Addr# -> Int# -> Word#
-indexWord8OffAddr# addr off = word8ToWord# (Prim.indexWord8OffAddr# addr off)
-{-# INLINE indexWord8OffAddr# #-}
-
-indexWord16OffAddr# :: Addr# -> Int# -> Word#
-indexWord16OffAddr# addr off = word16ToWord# (Prim.indexWord16OffAddr# addr off)
-{-# INLINE indexWord16OffAddr# #-}
-
-indexWord32OffAddr# :: Addr# -> Int# -> Word#
-indexWord32OffAddr# addr off = word32ToWord# (Prim.indexWord32OffAddr# addr off)
-{-# INLINE indexWord32OffAddr# #-}
-
-indexWord64OffAddr# :: Addr# -> Int# -> Word#
-indexWord64OffAddr# addr off = Prim.indexWord64OffAddr# addr off
-{-# INLINE indexWord64OffAddr# #-}
-
-readWord8OffAddr# :: Addr# -> Int# -> State# d -> (# State# d, Word# #)
-readWord8OffAddr# addr off st =
-  let !(# st', v #) = Prim.readWord8OffAddr# addr off st
-   in (# st', word8ToWord# v #)
-{-# INLINE readWord8OffAddr# #-}
-
-readWord16OffAddr# :: Addr# -> Int# -> State# d -> (# State# d, Word# #)
-readWord16OffAddr# addr off st =
-  let !(# st', v #) = Prim.readWord16OffAddr# addr off st
-   in (# st', word16ToWord# v #)
-{-# INLINE readWord16OffAddr# #-}
-
-readWord32OffAddr# :: Addr# -> Int# -> State# d -> (# State# d, Word# #)
-readWord32OffAddr# addr off st =
-  let !(# st', v #) = Prim.readWord32OffAddr# addr off st
-   in (# st', word32ToWord# v #)
-{-# INLINE readWord32OffAddr# #-}
-
-readWord64OffAddr# :: Addr# -> Int# -> State# d -> (# State# d, Word# #)
-readWord64OffAddr# = Prim.readWord64OffAddr#
-{-# INLINE readWord64OffAddr# #-}
-
-writeWord8OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
-writeWord8OffAddr# addr off v st =
-  Prim.writeWord8OffAddr# addr off (wordToWord8# v) st
-{-# INLINE writeWord8OffAddr# #-}
-
-writeWord16OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
-writeWord16OffAddr# addr off v st =
-  Prim.writeWord16OffAddr# addr off (wordToWord16# v) st
-{-# INLINE writeWord16OffAddr# #-}
-
-writeWord32OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
-writeWord32OffAddr# addr off v st =
-  Prim.writeWord32OffAddr# addr off (wordToWord32# v) st
-{-# INLINE writeWord32OffAddr# #-}
-
-writeWord64OffAddr# :: Addr# -> Int# -> Word# -> State# d -> State# d
-writeWord64OffAddr# = Prim.writeWord64OffAddr#
-{-# INLINE writeWord64OffAddr# #-}
 
 #endif
