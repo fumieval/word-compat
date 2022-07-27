@@ -1,5 +1,8 @@
 # Revision history for word-compat
 
+## 0.0.4
+
+* Added `GHC.Prim.Compat`, providing array operations compatible with `GHC.Word.Compat`
 ## 0.0.3
 
 * Added `COMPLETE` pragmas to pattern synonyms
