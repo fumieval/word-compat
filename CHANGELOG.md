@@ -1,5 +1,9 @@
 # Revision history for word-compat
 
+## 0.0.5
+
+* Supported `Word64#` on GHC 9.4 and older
+
 ## 0.0.4
 
 * Added `GHC.Prim.Compat`, providing array operations compatible with `GHC.Word.Compat`
