@@ -5,7 +5,7 @@
 module GHC.Word.Compat (W.Word8,
     W.Word16,
     W.Word32,
-    W.Word64(..),
+    W.Word64,
     W.Word(..),
 #if MIN_VERSION_ghc_prim(0,8,0)
     pattern GHC.Word.Compat.W8#,
@@ -15,6 +15,11 @@ module GHC.Word.Compat (W.Word8,
     pattern W.W8#,
     pattern W.W16#,
     pattern W.W32#,
+#endif
+#if MIN_VERSION_ghc_prim(0,9,0)
+    pattern GHC.Word.Compat.W64#,
+#else
+    pattern W.W64#,
 #endif
         -- * Shifts
     uncheckedShiftL64#,
@@ -41,7 +46,7 @@ module GHC.Word.Compat (W.Word8,
     eqWord32, neWord32, gtWord32, geWord32, ltWord32, leWord32,
     eqWord64, neWord64, gtWord64, geWord64, ltWord64, leWord64) where
 
-import GHC.Word hiding (Word8(..), Word16(..), Word32(..))
+import GHC.Word hiding (Word8(..), Word16(..), Word32(..), Word64(..))
 import qualified GHC.Word as W
 
 #if MIN_VERSION_ghc_prim(0,8,0)
@@ -62,5 +67,14 @@ pattern W32# :: Word# -> W.Word32
 pattern W32# x <- (W.W32# (word32ToWord# -> x)) where
   W32# x = W.W32# (wordToWord32# x)
 {-# COMPLETE W32# #-}
+
+#endif
+
+#if MIN_VERSION_ghc_prim(0,9,0)
+
+pattern W64# :: Word# -> W.Word64
+pattern W64# x <- (W.W64# (word64ToWord# -> x)) where
+  W64# x = W.W64# (wordToWord64# x)
+{-# COMPLETE W64# #-}
 
 #endif

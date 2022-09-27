@@ -23,5 +23,8 @@ _w16 (W16# x) = x
 _w32 :: Word32 -> Word#
 _w32 (W32# x) = x
 
+_w64 :: Word64 -> Word#
+_w64 (W64# x) = x
+
 main :: IO ()
 main = pure ()
