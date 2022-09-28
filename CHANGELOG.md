@@ -1,5 +1,9 @@
 # Revision history for word-compat
 
+## 0.0.6
+
+* Added a pattern synonym for `Word64#`
+
 ## 0.0.5
 
 * Supported `Word64#` on GHC 9.4 and older
